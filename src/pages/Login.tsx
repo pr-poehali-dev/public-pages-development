@@ -16,9 +16,41 @@ const Login = () => {
     rememberMe: false
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      const response = await fetch('https://functions.poehali.dev/89ba7b88-0b93-4cc6-9c26-525f5468a8c0', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          emailOrPhone: formData.emailOrPhone,
+          password: formData.password
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setError(data.error || 'Ошибка авторизации');
+        setIsLoading(false);
+        return;
+      }
+      
+      localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userId', data.userId);
+      localStorage.setItem('userName', data.fullName);
+      localStorage.setItem('userType', data.userType);
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Ошибка сети. Попробуйте позже');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -154,9 +186,17 @@ const Login = () => {
               </Label>
             </div>
 
-            <Button type="submit" className="w-full" size="lg">
-              <Icon name="LogIn" className="mr-2" size={18} />
-              Войти
+            {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+            
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? (
+                <>Вход...</>
+              ) : (
+                <>
+                  <Icon name="LogIn" className="mr-2" size={18} />
+                  Войти
+                </>
+              )}
             </Button>
           </form>
 

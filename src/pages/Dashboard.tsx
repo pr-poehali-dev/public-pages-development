@@ -8,8 +8,9 @@ import { Progress } from '@/components/ui/progress';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [userType] = useState<'entrepreneur' | 'freelancer'>('entrepreneur');
-  const balance = 2450;
+  const userName = localStorage.getItem('userName') || 'Пользователь';
+  const [userType] = useState<'entrepreneur' | 'freelancer'>((localStorage.getItem('userType') as 'entrepreneur' | 'freelancer') || 'entrepreneur');
+  const balance = 0;
 
   const statsEntrepreneur = [
     { label: 'Посетители сайта', value: '1,234', icon: 'Users', color: 'text-blue-600' },
@@ -34,34 +35,9 @@ const Dashboard = () => {
     { title: 'Запустить рекламу', completed: false }
   ];
 
-  const activeProjects = [
-    {
-      id: 1,
-      name: 'Кофейня у реки',
-      type: 'site',
-      status: 'published',
-      icon: 'Globe',
-      statusText: 'Опубликован',
-      statusColor: 'bg-green-100 text-green-700'
-    },
-    {
-      id: 2,
-      name: 'Бот для заказов',
-      type: 'bot',
-      status: 'active',
-      icon: 'Bot',
-      statusText: 'Активен',
-      statusColor: 'bg-blue-100 text-blue-700'
-    }
-  ];
+  const activeProjects: Array<{id: number; name: string; type: string; status: string; icon: string; statusText: string; statusColor: string;}> = [];
 
-  const notifications = [
-    { text: 'Агент Марк отправил отчет', time: '5 мин назад', icon: 'FileText' },
-    { text: 'Новый заказ в боте (2)', time: '15 мин назад', icon: 'ShoppingCart' },
-    { text: 'Курс "Налоги" ждет вас', time: '1 час назад', icon: 'GraduationCap' },
-    { text: 'Пополнен баланс на 5000₽', time: '3 часа назад', icon: 'Wallet' },
-    { text: 'Ваша реклама достигла 1000 показов', time: '5 часов назад', icon: 'TrendingUp' }
-  ];
+  const notifications: Array<{text: string; time: string; icon: string;}> = [];
 
   const completedSteps = onboardingSteps.filter(s => s.completed).length;
   const progressPercent = (completedSteps / onboardingSteps.length) * 100;
@@ -80,8 +56,8 @@ const Dashboard = () => {
               ИП
             </div>
             <div className="flex-1 text-left">
-              <div className="text-sm font-semibold">Иван Петров</div>
-              <div className="text-xs text-muted-foreground">Предприниматель</div>
+              <div className="text-sm font-semibold">{userName}</div>
+              <div className="text-xs text-muted-foreground">{userType === 'entrepreneur' ? 'Предприниматель' : 'Фрилансер'}</div>
             </div>
           </button>
 
@@ -116,6 +92,10 @@ const Dashboard = () => {
           <Button variant="ghost" className="w-full justify-start hover:bg-muted/50" onClick={() => navigate('/dashboard/statistics')}>
             <Icon name="BarChart3" className="mr-3" size={18} />
             Статистика
+          </Button>
+          <Button variant="ghost" className="w-full justify-start hover:bg-muted/50" onClick={() => navigate('/dashboard/domains')}>
+            <Icon name="Globe" className="mr-3" size={18} />
+            Домены и хостинг
           </Button>
           <Button variant="ghost" className="w-full justify-start hover:bg-muted/50" onClick={() => navigate('/university')}>
             <Icon name="GraduationCap" className="mr-3" size={18} />
@@ -159,7 +139,7 @@ const Dashboard = () => {
 
       <main className="ml-64 flex-1 p-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Добро пожаловать, Иван! 👋</h1>
+          <h1 className="text-3xl font-bold mb-2">Добро пожаловать, {userName.split(' ')[0]}! 👋</h1>
           <p className="text-muted-foreground">Вот что происходит с вашим бизнесом сегодня</p>
         </div>
 
@@ -281,26 +261,39 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {activeProjects.map((project) => (
-                  <div
-                    key={project.id}
-                    className="flex items-center gap-4 p-4 border border-border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => navigate(`/editor/${project.type}/${project.id}`)}
-                  >
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Icon name={project.icon} size={24} className="text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold mb-1">{project.name}</h4>
-                      <Badge className={project.statusColor}>{project.statusText}</Badge>
-                    </div>
-                    <Icon name="ChevronRight" size={20} className="text-muted-foreground" />
+                {activeProjects.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Icon name="Folder" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <p className="text-muted-foreground mb-4">У вас пока нет проектов</p>
+                    <Button onClick={() => navigate('/editor/site/new')}>
+                      <Icon name="Plus" className="mr-2" size={18} />
+                      Создать первый проект
+                    </Button>
                   </div>
-                ))}
-                <Button variant="outline" className="w-full" onClick={() => navigate('/editor/site/new')}>
-                  <Icon name="Plus" className="mr-2" size={18} />
-                  Создать новый проект
-                </Button>
+                ) : (
+                  <>
+                    {activeProjects.map((project) => (
+                      <div
+                        key={project.id}
+                        className="flex items-center gap-4 p-4 border border-border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => navigate(`/editor/${project.type}/${project.id}`)}
+                      >
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Icon name={project.icon} size={24} className="text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold mb-1">{project.name}</h4>
+                          <Badge className={project.statusColor}>{project.statusText}</Badge>
+                        </div>
+                        <Icon name="ChevronRight" size={20} className="text-muted-foreground" />
+                      </div>
+                    ))}
+                    <Button variant="outline" className="w-full" onClick={() => navigate('/editor/site/new')}>
+                      <Icon name="Plus" className="mr-2" size={18} />
+                      Создать новый проект
+                    </Button>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -312,17 +305,26 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {notifications.map((notif, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                      <Icon name={notif.icon} size={16} className="text-muted-foreground" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm mb-1">{notif.text}</p>
-                      <p className="text-xs text-muted-foreground">{notif.time}</p>
-                    </div>
+                {notifications.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Icon name="Bell" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <p className="text-muted-foreground">Уведомлений пока нет</p>
                   </div>
-                ))}
+                ) : (
+                  <>
+                    {notifications.map((notif, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                          <Icon name={notif.icon} size={16} className="text-muted-foreground" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm mb-1">{notif.text}</p>
+                          <p className="text-xs text-muted-foreground">{notif.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>

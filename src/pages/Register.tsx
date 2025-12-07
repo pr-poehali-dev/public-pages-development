@@ -72,7 +72,9 @@ const Register = () => {
     setErrors(prev => ({ ...prev, [field]: error }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const newErrors: Record<string, string> = {};
@@ -90,7 +92,37 @@ const Register = () => {
 
     const hasErrors = Object.values(newErrors).some(err => err !== '');
     if (!hasErrors) {
-      navigate('/dashboard');
+      setIsLoading(true);
+      try {
+        const response = await fetch('https://functions.poehali.dev/c7b93966-5b7d-462e-ac34-d15848722648', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fullName: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            password: formData.password,
+            userType: 'entrepreneur'
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          setErrors({ submit: data.error || 'Ошибка регистрации' });
+          setIsLoading(false);
+          return;
+        }
+        
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('userName', data.fullName);
+        localStorage.setItem('userType', data.userType);
+        navigate('/dashboard');
+      } catch (error) {
+        setErrors({ submit: 'Ошибка сети. Попробуйте позже' });
+        setIsLoading(false);
+      }
     }
   };
 
@@ -166,17 +198,8 @@ const Register = () => {
 
           <div className="mt-12 p-6 bg-white/50 rounded-2xl backdrop-blur-sm">
             <p className="text-sm text-muted-foreground italic">
-              "Зарегистрировался, создал сайт за вечер, запустил рекламу — получил первые заказы уже на следующий день!"
+              "Зарегистрируйтесь и начните создавать свой бизнес уже сегодня!"
             </p>
-            <div className="flex items-center gap-3 mt-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold">
-                АИ
-              </div>
-              <div>
-                <div className="font-semibold">Алексей Иванов</div>
-                <div className="text-xs text-muted-foreground">Предприниматель</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -321,9 +344,17 @@ const Register = () => {
               </div>
             </div>
 
-            <Button type="submit" className="w-full" size="lg">
-              <Icon name="UserPlus" className="mr-2" size={18} />
-              Зарегистрироваться
+            {errors.submit && <p className="text-sm text-red-500 text-center">{errors.submit}</p>}
+            
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? (
+                <>Регистрация...</>
+              ) : (
+                <>
+                  <Icon name="UserPlus" className="mr-2" size={18} />
+                  Зарегистрироваться
+                </>
+              )}
             </Button>
           </form>
 
