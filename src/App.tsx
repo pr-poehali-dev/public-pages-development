@@ -5,7 +5,19 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import SiteEditor from "./pages/SiteEditor";
+import BotEditor from "./pages/BotEditor";
+import Ads from "./pages/Ads";
+import Products from "./pages/Products";
+import Statistics from "./pages/Statistics";
+import University from "./pages/University";
+import AIChat from "./pages/AIChat";
+import Exchange from "./pages/Exchange";
+import Marketplace from "./pages/Marketplace";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -18,19 +30,19 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/login" element={<Index />} />
-          <Route path="/register" element={<Index />} />
-          <Route path="/editor/site/:id" element={<Dashboard />} />
-          <Route path="/editor/bot/:id" element={<Dashboard />} />
-          <Route path="/dashboard/ads" element={<Dashboard />} />
-          <Route path="/dashboard/products" element={<Dashboard />} />
-          <Route path="/dashboard/statistics" element={<Dashboard />} />
-          <Route path="/university" element={<Dashboard />} />
-          <Route path="/exchange" element={<Dashboard />} />
-          <Route path="/marketplace" element={<Dashboard />} />
-          <Route path="/dashboard/settings" element={<Dashboard />} />
-          <Route path="/dashboard/ai-chat" element={<Dashboard />} />
+          <Route path="/editor/site/:id" element={<SiteEditor />} />
+          <Route path="/editor/bot/:id" element={<BotEditor />} />
+          <Route path="/dashboard/ads" element={<Ads />} />
+          <Route path="/dashboard/products" element={<Products />} />
+          <Route path="/dashboard/statistics" element={<Statistics />} />
+          <Route path="/university" element={<University />} />
+          <Route path="/dashboard/ai-chat" element={<AIChat />} />
+          <Route path="/exchange" element={<Exchange />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/dashboard/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
