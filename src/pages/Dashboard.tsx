@@ -121,7 +121,7 @@ const Dashboard = () => {
             <Icon name="GraduationCap" className="mr-3" size={18} />
             Университет
           </Button>
-          <Button variant="ghost" className="w-full justify-start hover:bg-muted/50" onClick={() => navigate('/ai-chat')}>
+          <Button variant="ghost" className="w-full justify-start hover:bg-muted/50" onClick={() => navigate('/dashboard/ai-chat')}>
             <Icon name="MessageSquare" className="mr-3" size={18} />
             Чат с ИИ
           </Button>
@@ -265,7 +265,7 @@ const Dashboard = () => {
               size="lg"
               variant="outline"
               className="h-24 flex flex-col gap-2"
-              onClick={() => navigate('/ai-chat')}
+              onClick={() => navigate('/dashboard/ai-chat')}
             >
               <Icon name="MessageSquare" size={28} />
               <span>Задать вопрос ИИ</span>
