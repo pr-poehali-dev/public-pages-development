@@ -1,144 +1,135 @@
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 
-const TariffTab = () => {
+interface TariffTabProps {
+  currentTariff: string;
+}
+
+export const TariffTab = ({ currentTariff }: TariffTabProps) => {
   return (
-    <div className="space-y-6">
+    <>
       <Card>
         <CardHeader>
           <CardTitle>Текущий тариф</CardTitle>
-          <CardDescription>Вы используете тариф Pro</CardDescription>
+          <CardDescription>Вы используете тариф {currentTariff}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <Icon name="Zap" size={32} className="text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="border-2 border-border">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold mb-2">Free</h3>
+                <div className="text-3xl font-bold mb-4">₽0<span className="text-lg text-muted-foreground font-normal">/мес</span></div>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>1 сайт</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>Базовая аналитика</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>AI-консультант</span>
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full">Текущий</Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-primary shadow-lg">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+                Текущий
               </div>
-              <div>
-                <h3 className="text-2xl font-bold">Pro</h3>
-                <p className="text-muted-foreground">₽990/месяц</p>
-              </div>
-            </div>
-            <Badge>Активен</Badge>
-          </div>
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold mb-2">Pro</h3>
+                <div className="text-3xl font-bold mb-4">₽990<span className="text-lg text-muted-foreground font-normal">/мес</span></div>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>10 сайтов</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>Безлимит ботов</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>Расширенная аналитика</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>Все интеграции</span>
+                  </li>
+                </ul>
+                <Button className="w-full">Управление</Button>
+              </CardContent>
+            </Card>
 
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="p-4 border border-border rounded-lg">
-              <div className="text-2xl font-bold mb-1">10</div>
-              <div className="text-sm text-muted-foreground">Сайтов</div>
-            </div>
-            <div className="p-4 border border-border rounded-lg">
-              <div className="text-2xl font-bold mb-1">Безлимит</div>
-              <div className="text-sm text-muted-foreground">Чат-ботов</div>
-            </div>
-          </div>
-
-          <p className="text-sm text-muted-foreground mb-4">
-            Следующее списание: 12 января 2025
-          </p>
-
-          <div className="flex gap-2">
-            <Button variant="outline">Изменить тариф</Button>
-            <Button variant="outline">Отменить подписку</Button>
+            <Card className="border-2 border-border">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold mb-2">Premium</h3>
+                <div className="text-3xl font-bold mb-4">₽2,990<span className="text-lg text-muted-foreground font-normal">/мес</span></div>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>Безлимит сайтов</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>Белый лейбл</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>API доступ</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Icon name="Check" size={16} className="text-primary" />
+                    <span>Приоритетная поддержка</span>
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full">Перейти</Button>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Free</CardTitle>
-            <CardDescription>
-              <div className="text-3xl font-bold mt-2">₽0</div>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">1 сайт</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">Базовая аналитика</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">AI-консультант</span>
-              </li>
-            </ul>
-            <Button variant="outline" className="w-full" disabled>Текущий тариф</Button>
-          </CardContent>
-        </Card>
-
-        <Card className="border-2 border-primary">
-          <div className="bg-primary text-white text-center py-2 text-sm font-medium rounded-t-lg">
-            Текущий
+      <Card>
+        <CardHeader>
+          <CardTitle>AI-доступ</CardTitle>
+          <CardDescription>Настройка использования AI-моделей</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Предпочитаемая модель</Label>
+            <Select defaultValue="gpt4">
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gpt4">GPT-4 (OpenAI) - ₽0.03/1K токенов</SelectItem>
+                <SelectItem value="claude">Claude 3 (Anthropic) - ₽0.025/1K токенов</SelectItem>
+                <SelectItem value="gemini">Gemini Pro (Google) - ₽0.02/1K токенов</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <CardHeader>
-            <CardTitle>Pro</CardTitle>
-            <CardDescription>
-              <div className="text-3xl font-bold mt-2">₽990/мес</div>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">10 сайтов</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">Расширенная аналитика</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">Чат-боты</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">Интеграции</span>
-              </li>
-            </ul>
-            <Button className="w-full" disabled>Активен</Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Premium</CardTitle>
-            <CardDescription>
-              <div className="text-3xl font-bold mt-2">₽2,990/мес</div>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">Безлимит сайтов</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">Белый лейбл</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">API доступ</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={16} className="text-primary" />
-                <span className="text-sm">Приоритетная поддержка</span>
-              </li>
-            </ul>
-            <Button variant="outline" className="w-full">Перейти</Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+          <div className="p-4 bg-muted/50 rounded-lg">
+            <h4 className="font-semibold mb-2">Использование за месяц</h4>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Израсходовано токенов:</span>
+              <span className="font-semibold">5,234</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Стоимость:</span>
+              <span className="font-semibold">₽150</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 };
-
-export default TariffTab;
