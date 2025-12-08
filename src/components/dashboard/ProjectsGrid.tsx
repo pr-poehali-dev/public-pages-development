@@ -82,7 +82,7 @@ export const ProjectsGrid = ({
             {projects.map((project) => (
               <Card 
                 key={project.id} 
-                className="hover:shadow-lg transition-all cursor-pointer group"
+                className="hover:shadow-lg transition-all duration-300 cursor-pointer group hover:-translate-y-1 hover:border-primary/50"
                 onClick={() => onOpenProject(project.type, project.id)}
               >
                 <CardContent className="p-6">

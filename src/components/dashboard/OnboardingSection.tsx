@@ -27,7 +27,7 @@ export const OnboardingSection = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-      <Card className="lg:col-span-2">
+      <Card className="lg:col-span-2 animate-fade-in">
         <CardHeader>
           <CardTitle>Начало работы</CardTitle>
           <CardDescription>Пройдите основные шаги для запуска бизнеса</CardDescription>
@@ -38,11 +38,11 @@ export const OnboardingSection = ({
               <span className="font-medium">Прогресс: {completedSteps}/{steps.length}</span>
               <span className="text-muted-foreground">{Math.round(progressPercent)}%</span>
             </div>
-            <Progress value={progressPercent} className="h-2" />
+            <Progress value={progressPercent} className="h-2 transition-all duration-500" />
           </div>
           <div className="space-y-3">
             {steps.map((step, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+              <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-all duration-200 cursor-pointer hover:scale-[1.02]">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                   step.completed ? 'bg-green-100 text-green-600' : 
                   step.inProgress ? 'bg-blue-100 text-blue-600' : 
@@ -60,14 +60,14 @@ export const OnboardingSection = ({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="animate-fade-in" style={{animationDelay: '0.1s', opacity: 0, animationFillMode: 'forwards'}}>
         <CardHeader>
           <CardTitle>Статистика</CardTitle>
           <CardDescription>Основные показатели</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {stats.map((stat, index) => (
-            <div key={index} className="flex items-center justify-between">
+            <div key={index} className="flex items-center justify-between transition-all duration-200 hover:scale-[1.02]">
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-lg bg-muted/50 flex items-center justify-center ${stat.color}`}>
                   <Icon name={stat.icon as any} size={20} />

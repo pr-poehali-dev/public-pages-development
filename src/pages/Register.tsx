@@ -152,7 +152,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 p-12 flex-col justify-center">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 p-12 flex-col justify-center animate-slide-in-left">
         <div className="max-w-lg">
           <div className="flex items-center gap-2 mb-8">
             <Icon name="Rocket" size={40} className="text-primary" />
@@ -204,8 +204,18 @@ const Register = () => {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-        <Card className="w-full max-w-md p-8 animate-fade-in">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 animate-slide-in-right">
+        <Card className="w-full max-w-md p-8 animate-scale-in">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="mb-4 -ml-2"
+          >
+            <Icon name="ArrowLeft" size={16} className="mr-2" />
+            На главную
+          </Button>
+
           <div className="lg:hidden flex justify-center mb-6">
             <div className="flex items-center gap-2">
               <Icon name="Rocket" size={32} className="text-primary" />

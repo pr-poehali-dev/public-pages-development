@@ -10,9 +10,14 @@ import {
 } from '@/components/ui/accordion';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
+import { useScrollAnimation } from '@/hooks/use-scroll-animation';
 
 export const MainContent = () => {
   const navigate = useNavigate();
+  const forWhoSection = useScrollAnimation();
+  const capabilitiesSection = useScrollAnimation();
+  const pricingSection = useScrollAnimation();
+  const faqSection = useScrollAnimation();
 
   const capabilities = [
     { icon: 'Globe', title: 'Сайты', desc: 'AI-генерация, конструктор' },
@@ -51,7 +56,10 @@ export const MainContent = () => {
 
   return (
     <>
-      <section className="container mx-auto px-6 py-20">
+      <section 
+        ref={forWhoSection.ref}
+        className={`container mx-auto px-6 py-20 scroll-animate ${forWhoSection.isVisible ? 'visible' : ''}`}
+      >
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">Для кого</h2>
         <p className="text-center text-muted-foreground mb-16 text-lg">Выберите свой путь развития</p>
         <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
@@ -131,7 +139,11 @@ export const MainContent = () => {
         </div>
       </section>
 
-      <section id="capabilities" className="container mx-auto px-6 py-16 bg-muted/30">
+      <section 
+        id="capabilities" 
+        ref={capabilitiesSection.ref}
+        className={`container mx-auto px-6 py-16 bg-muted/30 scroll-animate ${capabilitiesSection.isVisible ? 'visible' : ''}`}
+      >
         <h2 className="text-4xl font-bold text-center mb-12">Возможности платформы</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {capabilities.map((cap, idx) => (
@@ -144,7 +156,11 @@ export const MainContent = () => {
         </div>
       </section>
 
-      <section id="pricing" className="container mx-auto px-6 py-16">
+      <section 
+        id="pricing" 
+        ref={pricingSection.ref}
+        className={`container mx-auto px-6 py-16 scroll-animate ${pricingSection.isVisible ? 'visible' : ''}`}
+      >
         <h2 className="text-4xl font-bold text-center mb-4">Тарифы</h2>
         <p className="text-center text-muted-foreground mb-12">Подберите план под свои задачи</p>
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -250,7 +266,10 @@ export const MainContent = () => {
         </div>
       </section>
 
-      <section className="container mx-auto px-6 py-16 bg-muted/30">
+      <section 
+        ref={faqSection.ref}
+        className={`container mx-auto px-6 py-16 bg-muted/30 scroll-animate ${faqSection.isVisible ? 'visible' : ''}`}
+      >
         <h2 className="text-4xl font-bold text-center mb-12">Часто задаваемые вопросы</h2>
         <div className="max-w-3xl mx-auto">
           <Accordion type="single" collapsible>
