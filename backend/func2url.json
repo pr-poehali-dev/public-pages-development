@@ -3,5 +3,8 @@
   "projects": "https://functions.poehali.dev/6ef235f2-9501-4c64-9cac-1c75801c81c0",
   "blocks": "https://functions.poehali.dev/ea7403b2-c106-4a24-9f6a-41525a179d20",
   "register": "https://functions.poehali.dev/c7b93966-5b7d-462e-ac34-d15848722648",
-  "login": "https://functions.poehali.dev/89ba7b88-0b93-4cc6-9c26-525f5468a8c0"
+  "login": "https://functions.poehali.dev/89ba7b88-0b93-4cc6-9c26-525f5468a8c0",
+  "bots": "https://functions.poehali.dev/ea7403b2-c106-4a24-9f6a-41525a179d20",
+  "marketplace": "https://functions.poehali.dev/ea7403b2-c106-4a24-9f6a-41525a179d20",
+  "exchange": "https://functions.poehali.dev/ea7403b2-c106-4a24-9f6a-41525a179d20"
 }
