@@ -1,21 +1,12 @@
 import { useState, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import Icon from '@/components/ui/icon';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { DraggableBlock } from '@/components/editor/DraggableBlock';
-import { DropZone } from '@/components/editor/DropZone';
-import { BlockRenderer } from '@/components/editor/BlockRenderer';
 import { useToast } from '@/hooks/use-toast';
+import { EditorHeader } from '@/components/editor/EditorHeader';
+import { BlocksPanel } from '@/components/editor/BlocksPanel';
+import { EditorCanvas } from '@/components/editor/EditorCanvas';
+import { PropertiesPanel } from '@/components/editor/PropertiesPanel';
 
 const SiteEditor = () => {
   const navigate = useNavigate();
@@ -430,282 +421,49 @@ const SiteEditor = () => {
     setLoading(false);
   };
 
-  const getViewModeWidth = () => {
-    switch (viewMode) {
-      case 'mobile': return 'max-w-[375px]';
-      case 'tablet': return 'max-w-[768px]';
-      default: return 'w-full';
-    }
-  };
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-screen flex flex-col bg-background">
-        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
-              <Icon name="ArrowLeft" size={20} />
-            </Button>
-            
-            {isEditingName ? (
-              <Input
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                onBlur={() => setIsEditingName(false)}
-                onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
-                className="w-64"
-                autoFocus
-              />
-            ) : (
-              <button
-                onClick={() => setIsEditingName(true)}
-                className="text-lg font-semibold hover:text-primary transition-colors flex items-center gap-2"
-              >
-                <Icon name="Globe" size={20} className="text-primary" />
-                {projectName}
-              </button>
-            )}
-            <Badge variant="outline" className="ml-2">Черновик</Badge>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 border border-border rounded-lg p-1 bg-muted/50">
-              <Button
-                variant={viewMode === 'desktop' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('desktop')}
-              >
-                <Icon name="Monitor" size={16} />
-              </Button>
-              <Button
-                variant={viewMode === 'tablet' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('tablet')}
-              >
-                <Icon name="Tablet" size={16} />
-              </Button>
-              <Button
-                variant={viewMode === 'mobile' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('mobile')}
-              >
-                <Icon name="Smartphone" size={16} />
-              </Button>
-            </div>
-
-            <div className="h-8 w-px bg-border" />
-
-            <Button variant="outline" size="sm" onClick={handleSave} disabled={loading}>
-              <Icon name="Save" size={16} className="mr-2" />
-              {loading ? 'Сохранение...' : 'Сохранить'}
-            </Button>
-            <Button size="sm" className="bg-gradient-to-r from-green-600 to-green-700">
-              <Icon name="Rocket" size={16} className="mr-2" />
-              Публиковать
-            </Button>
-
-            <div className="h-8 w-px bg-border" />
-            
-            <ThemeToggle />
-          </div>
-        </header>
+        <EditorHeader
+          projectName={projectName}
+          isEditingName={isEditingName}
+          viewMode={viewMode}
+          loading={loading}
+          onProjectNameChange={setProjectName}
+          onEditingNameChange={setIsEditingName}
+          onViewModeChange={setViewMode}
+          onSave={handleSave}
+          onBack={() => navigate('/dashboard')}
+        />
 
         <div className="flex-1 flex overflow-hidden">
           {leftPanelOpen && (
-            <aside className="w-72 border-r border-border bg-card flex flex-col shadow-sm">
-              <div className="p-4 border-b border-border">
-                <h3 className="text-sm font-semibold mb-3">Блоки ({blocks.length})</h3>
-                <div className="relative">
-                  <Icon name="Search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Поиск блоков..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
-                  />
-                </div>
-              </div>
-              
-              <div className="p-2 border-b border-border">
-                <div className="flex flex-wrap gap-1">
-                  {categories.map(cat => (
-                    <Button
-                      key={cat}
-                      variant={activeCategory === cat ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setActiveCategory(cat)}
-                      className="text-xs"
-                    >
-                      {cat}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              
-              <ScrollArea className="flex-1">
-                <div className="p-4 space-y-3">
-                  {blocks.map((block) => (
-                    <DraggableBlock key={block.id} block={block} />
-                  ))}
-                </div>
-              </ScrollArea>
-            </aside>
+            <BlocksPanel
+              blocks={blocks}
+              searchQuery={searchQuery}
+              activeCategory={activeCategory}
+              categories={categories}
+              onSearchChange={setSearchQuery}
+              onCategoryChange={setActiveCategory}
+            />
           )}
 
-          <main className="flex-1 overflow-auto bg-muted/30 p-6">
-            <div className={`mx-auto ${getViewModeWidth()} transition-all duration-300`}>
-              <DropZone onDrop={handleBlockDrop} hasBlocks={pageBlocks.length > 0}>
-                <div className="space-y-4">
-                  {pageBlocks.map((block) => (
-                    <BlockRenderer
-                      key={block.id}
-                      block={block}
-                      isSelected={selectedBlockId === block.id}
-                      onSelect={() => handleSelectBlock(block.id)}
-                      onDelete={() => handleDeleteBlock(block.id)}
-                    />
-                  ))}
-                </div>
-              </DropZone>
-            </div>
-          </main>
+          <EditorCanvas
+            pageBlocks={pageBlocks}
+            selectedBlockId={selectedBlockId}
+            viewMode={viewMode}
+            onBlockDrop={handleBlockDrop}
+            onSelectBlock={handleSelectBlock}
+            onDeleteBlock={handleDeleteBlock}
+          />
 
           {rightPanelOpen && selectedBlockId && (
-            <aside className="w-80 border-l border-border bg-card flex flex-col shadow-sm">
-              <div className="p-4 border-b border-border flex items-center justify-between">
-                <h3 className="text-sm font-semibold">Редактирование блока</h3>
-                <Button variant="ghost" size="icon" onClick={() => setRightPanelOpen(false)}>
-                  <Icon name="X" size={16} />
-                </Button>
-              </div>
-              
-              <ScrollArea className="flex-1">
-                <Tabs defaultValue="content" className="w-full">
-                  <div className="px-4 pt-4">
-                    <TabsList className="grid grid-cols-4 w-full">
-                      <TabsTrigger value="content">Контент</TabsTrigger>
-                      <TabsTrigger value="styles">Стили</TabsTrigger>
-                      <TabsTrigger value="settings">Настройки</TabsTrigger>
-                      <TabsTrigger value="integrations">Интеграции</TabsTrigger>
-                    </TabsList>
-                  </div>
-
-                  <TabsContent value="content" className="p-4 space-y-4">
-                    <div>
-                      <Label>Заголовок</Label>
-                      <Input 
-                        placeholder="Введите заголовок" 
-                        className="mt-2"
-                        value={editingContent.title || ''}
-                        onChange={(e) => setEditingContent({ ...editingContent, title: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label>Текст</Label>
-                      <Textarea
-                        placeholder="Введите текст"
-                        className="mt-2"
-                        value={editingContent.text || ''}
-                        onChange={(e) => setEditingContent({ ...editingContent, text: e.target.value })}
-                      />
-                    </div>
-                    <div>
-                      <Label>Ссылка (URL)</Label>
-                      <Input 
-                        placeholder="https://example.com" 
-                        className="mt-2"
-                        value={editingContent.url || ''}
-                        onChange={(e) => setEditingContent({ ...editingContent, url: e.target.value })}
-                      />
-                    </div>
-                    <Button onClick={handleUpdateBlockContent} className="w-full">
-                      <Icon name="Save" size={16} className="mr-2" />
-                      Сохранить изменения
-                    </Button>
-                  </TabsContent>
-
-                  <TabsContent value="styles" className="p-4 space-y-4">
-                    <div>
-                      <Label>Цвет фона</Label>
-                      <Input type="color" className="mt-2 h-10" />
-                    </div>
-                    <div>
-                      <Label>Цвет текста</Label>
-                      <Input type="color" className="mt-2 h-10" />
-                    </div>
-                    <div>
-                      <Label>Отступы (padding)</Label>
-                      <Input placeholder="20px" className="mt-2" />
-                    </div>
-                    <div>
-                      <Label>Размер шрифта</Label>
-                      <Input placeholder="16px" className="mt-2" />
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="settings" className="p-4 space-y-4">
-                    <div>
-                      <Label>CSS класс</Label>
-                      <Input placeholder="my-custom-class" className="mt-2" />
-                    </div>
-                    <div>
-                      <Label>Анимация</Label>
-                      <select className="mt-2 w-full p-2 border border-border rounded-md bg-background">
-                        <option>Без анимации</option>
-                        <option>Плавное появление</option>
-                        <option>Слайд снизу</option>
-                        <option>Увеличение</option>
-                      </select>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="integrations" className="p-4 space-y-4">
-                    <div className="text-sm text-muted-foreground mb-4">
-                      Настройте интеграции для отправки данных формы
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <Button variant="outline" className="w-full justify-start">
-                        <Icon name="Mail" size={16} className="mr-2" />
-                        Email уведомления
-                      </Button>
-                      
-                      <Button variant="outline" className="w-full justify-start">
-                        <Icon name="MessageCircle" size={16} className="mr-2" />
-                        Telegram бот
-                      </Button>
-                      
-                      <Button variant="outline" className="w-full justify-start">
-                        <Icon name="Table" size={16} className="mr-2" />
-                        Google Sheets
-                      </Button>
-                      
-                      <Button variant="outline" className="w-full justify-start">
-                        <Icon name="Briefcase" size={16} className="mr-2" />
-                        AmoCRM
-                      </Button>
-                      
-                      <Button variant="outline" className="w-full justify-start">
-                        <Icon name="Box" size={16} className="mr-2" />
-                        Bitrix24
-                      </Button>
-                      
-                      <Button variant="outline" className="w-full justify-start">
-                        <Icon name="Send" size={16} className="mr-2" />
-                        Webhook
-                      </Button>
-                    </div>
-                    
-                    <div className="pt-4 border-t border-border">
-                      <div className="text-sm font-medium mb-2">Активные интеграции:</div>
-                      <div className="text-xs text-muted-foreground">
-                        Пока не настроено
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              </ScrollArea>
-            </aside>
+            <PropertiesPanel
+              editingContent={editingContent}
+              onContentChange={setEditingContent}
+              onSave={handleUpdateBlockContent}
+              onClose={() => setRightPanelOpen(false)}
+            />
           )}
         </div>
       </div>
