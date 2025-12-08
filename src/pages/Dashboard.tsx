@@ -11,6 +11,7 @@ const Dashboard = () => {
   const userName = localStorage.getItem('userName') || 'Пользователь';
   const [userType] = useState<'entrepreneur' | 'freelancer'>((localStorage.getItem('userType') as 'entrepreneur' | 'freelancer') || 'entrepreneur');
   const balance = 0;
+  const [showProjectTypeDialog, setShowProjectTypeDialog] = useState(false);
 
   const statsEntrepreneur = [
     { label: 'Посетители сайта', value: '1,234', icon: 'Users', color: 'text-blue-600' },
@@ -265,7 +266,7 @@ const Dashboard = () => {
                   <div className="text-center py-8">
                     <Icon name="Folder" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
                     <p className="text-muted-foreground mb-4">У вас пока нет проектов</p>
-                    <Button onClick={() => navigate('/editor/site/new')}>
+                    <Button onClick={() => setShowProjectTypeDialog(true)}>
                       <Icon name="Plus" className="mr-2" size={18} />
                       Создать первый проект
                     </Button>
@@ -288,7 +289,7 @@ const Dashboard = () => {
                         <Icon name="ChevronRight" size={20} className="text-muted-foreground" />
                       </div>
                     ))}
-                    <Button variant="outline" className="w-full" onClick={() => navigate('/editor/site/new')}>
+                    <Button variant="outline" className="w-full" onClick={() => setShowProjectTypeDialog(true)}>
                       <Icon name="Plus" className="mr-2" size={18} />
                       Создать новый проект
                     </Button>
@@ -330,6 +331,92 @@ const Dashboard = () => {
           </Card>
         </div>
       </main>
+
+      {/* Диалог выбора типа проекта */}
+      {showProjectTypeDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowProjectTypeDialog(false)}>
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Выберите тип проекта</h2>
+              <button onClick={() => setShowProjectTypeDialog(false)} className="text-muted-foreground hover:text-foreground">
+                <Icon name="X" size={24} />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Сайт */}
+              <button
+                onClick={() => {
+                  setShowProjectTypeDialog(false);
+                  navigate('/editor/site/new');
+                }}
+                className="group border-2 border-border hover:border-primary rounded-lg p-6 text-left transition-all hover:shadow-lg"
+              >
+                <div className="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
+                  <Icon name="Globe" size={32} className="text-blue-600 group-hover:text-white transition-colors" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Сайт</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Создайте лендинг, интернет-магазин или корпоративный сайт с помощью drag&drop редактора
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-600" />
+                    Готовые блоки и шаблоны
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-600" />
+                    AI-генерация контента
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-600" />
+                    Адаптивная верстка
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-600" />
+                    SEO-оптимизация
+                  </li>
+                </ul>
+              </button>
+
+              {/* Бот */}
+              <button
+                onClick={() => {
+                  setShowProjectTypeDialog(false);
+                  navigate('/editor/bot/new');
+                }}
+                className="group border-2 border-border hover:border-primary rounded-lg p-6 text-left transition-all hover:shadow-lg"
+              >
+                <div className="w-16 h-16 rounded-lg bg-purple-100 flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-colors">
+                  <Icon name="Bot" size={32} className="text-purple-600 group-hover:text-white transition-colors" />
+                </div>
+                <h3 className="text-xl font-bold mb-2">Чат-бот</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Создайте умного бота для Telegram, WhatsApp или VK с визуальным редактором сценариев
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-600" />
+                    Визуальный редактор потоков
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-600" />
+                    AI-ассистент и ChatGPT
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-600" />
+                    Интеграции с CRM
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Icon name="Check" size={16} className="text-green-600" />
+                    Приём платежей
+                  </li>
+                </ul>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
