@@ -1,17 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const userName = localStorage.getItem('userName') || 'Пользователь';
+  const userId = localStorage.getItem('userId');
   const [userType] = useState<'entrepreneur' | 'freelancer'>((localStorage.getItem('userType') as 'entrepreneur' | 'freelancer') || 'entrepreneur');
   const balance = 0;
   const [showProjectTypeDialog, setShowProjectTypeDialog] = useState(false);
+  const [activeProjects, setActiveProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [creatingProject, setCreatingProject] = useState(false);
 
   const statsEntrepreneur = [
     { label: 'Посетители сайта', value: '1,234', icon: 'Users', color: 'text-blue-600' },
@@ -36,9 +42,94 @@ const Dashboard = () => {
     { title: 'Запустить рекламу', completed: false }
   ];
 
-  const activeProjects: Array<{id: number; name: string; type: string; status: string; icon: string; statusText: string; statusColor: string;}> = [];
-
   const notifications: Array<{text: string; time: string; icon: string;}> = [];
+
+  useEffect(() => {
+    if (userId) {
+      loadProjects();
+    } else {
+      navigate('/login');
+    }
+  }, [userId]);
+
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`https://functions.poehali.dev/6ef235f2-9501-4c64-9cac-1c75801c81c0?user_id=${userId}`);
+      const data = await response.json();
+      setActiveProjects(data);
+    } catch (error) {
+      console.error('Error loading projects:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить проекты",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createProject = async (type: 'site' | 'bot') => {
+    if (!userId) return;
+
+    try {
+      setCreatingProject(true);
+      const response = await fetch('https://functions.poehali.dev/6ef235f2-9501-4c64-9cac-1c75801c81c0', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: type === 'site' ? 'Новый сайт' : 'Новый бот',
+          type: type,
+          user_id: parseInt(userId)
+        })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast({
+          title: "Проект создан",
+          description: `${type === 'site' ? 'Сайт' : 'Бот'} успешно создан`
+        });
+        navigate(`/editor/${type}/${data.project.id}`);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось создать проект",
+        variant: "destructive"
+      });
+    } finally {
+      setCreatingProject(false);
+    }
+  };
+
+  const getProjectIcon = (type: string) => {
+    return type === 'site' ? 'Globe' : 'Bot';
+  };
+
+  const getProjectStatusText = (status: string) => {
+    switch(status) {
+      case 'draft': return 'Черновик';
+      case 'published': return 'Опубликован';
+      case 'archived': return 'Архив';
+      default: return status;
+    }
+  };
+
+  const getProjectStatusColor = (status: string) => {
+    switch(status) {
+      case 'draft': return 'bg-yellow-100 text-yellow-800';
+      case 'published': return 'bg-green-100 text-green-800';
+      case 'archived': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   const completedSteps = onboardingSteps.filter(s => s.completed).length;
   const progressPercent = (completedSteps / onboardingSteps.length) * 100;
@@ -219,10 +310,10 @@ const Dashboard = () => {
             <Button
               size="lg"
               className="h-24 flex flex-col gap-2 bg-primary hover:bg-primary/90"
-              onClick={() => navigate('/editor/site/new')}
+              onClick={() => setShowProjectTypeDialog(true)}
             >
-              <Icon name="Globe" size={28} />
-              <span>Создать сайт</span>
+              <Icon name="Plus" size={28} />
+              <span>Создать проект</span>
             </Button>
             <Button
               size="lg"
@@ -262,7 +353,11 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {activeProjects.length === 0 ? (
+                {loading ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">Загрузка проектов...</p>
+                  </div>
+                ) : activeProjects.length === 0 ? (
                   <div className="text-center py-8">
                     <Icon name="Folder" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
                     <p className="text-muted-foreground mb-4">У вас пока нет проектов</p>
@@ -280,11 +375,11 @@ const Dashboard = () => {
                         onClick={() => navigate(`/editor/${project.type}/${project.id}`)}
                       >
                         <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Icon name={project.icon} size={24} className="text-primary" />
+                          <Icon name={getProjectIcon(project.type)} size={24} className="text-primary" />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-semibold mb-1">{project.name}</h4>
-                          <Badge className={project.statusColor}>{project.statusText}</Badge>
+                          <Badge className={getProjectStatusColor(project.status)}>{getProjectStatusText(project.status)}</Badge>
                         </div>
                         <Icon name="ChevronRight" size={20} className="text-muted-foreground" />
                       </div>
@@ -348,9 +443,10 @@ const Dashboard = () => {
               <button
                 onClick={() => {
                   setShowProjectTypeDialog(false);
-                  navigate('/editor/site/new');
+                  createProject('site');
                 }}
-                className="group border-2 border-border hover:border-primary rounded-lg p-6 text-left transition-all hover:shadow-lg"
+                disabled={creatingProject}
+                className="group border-2 border-border hover:border-primary rounded-lg p-6 text-left transition-all hover:shadow-lg disabled:opacity-50"
               >
                 <div className="w-16 h-16 rounded-lg bg-blue-100 flex items-center justify-center mb-4 group-hover:bg-blue-600 transition-colors">
                   <Icon name="Globe" size={32} className="text-blue-600 group-hover:text-white transition-colors" />
@@ -383,9 +479,10 @@ const Dashboard = () => {
               <button
                 onClick={() => {
                   setShowProjectTypeDialog(false);
-                  navigate('/editor/bot/new');
+                  createProject('bot');
                 }}
-                className="group border-2 border-border hover:border-primary rounded-lg p-6 text-left transition-all hover:shadow-lg"
+                disabled={creatingProject}
+                className="group border-2 border-border hover:border-primary rounded-lg p-6 text-left transition-all hover:shadow-lg disabled:opacity-50"
               >
                 <div className="w-16 h-16 rounded-lg bg-purple-100 flex items-center justify-center mb-4 group-hover:bg-purple-600 transition-colors">
                   <Icon name="Bot" size={32} className="text-purple-600 group-hover:text-white transition-colors" />
