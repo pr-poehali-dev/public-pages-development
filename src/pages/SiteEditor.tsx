@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,7 @@ const SiteEditor = () => {
   const [pageBlocks, setPageBlocks] = useState<any[]>([]);
   const [currentPageId, setCurrentPageId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [editingContent, setEditingContent] = useState<any>({});
 
   const blocks = [
     { id: 'hero', name: 'Заголовок', icon: 'Heading1', category: 'Контент', color: 'blue' },
@@ -125,6 +127,10 @@ const SiteEditor = () => {
   const handleDeleteBlock = async (blockId: number) => {
     try {
       setPageBlocks(pageBlocks.filter(b => b.id !== blockId));
+      if (selectedBlockId === blockId) {
+        setSelectedBlockId(null);
+        setRightPanelOpen(false);
+      }
       
       toast({
         title: "Блок удален",
@@ -139,13 +145,74 @@ const SiteEditor = () => {
     }
   };
 
+  const handleSelectBlock = (blockId: number) => {
+    setSelectedBlockId(blockId);
+    setRightPanelOpen(true);
+    const block = pageBlocks.find(b => b.id === blockId);
+    if (block) {
+      setEditingContent(block.content || {});
+    }
+  };
+
+  const handleUpdateBlockContent = async () => {
+    if (!selectedBlockId) return;
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/ea7403b2-c106-4a24-9f6a-41525a179d20', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          block_id: selectedBlockId,
+          content: editingContent
+        })
+      });
+
+      const updatedBlock = await response.json();
+      setPageBlocks(pageBlocks.map(b => b.id === selectedBlockId ? updatedBlock : b));
+      
+      toast({
+        title: "Сохранено",
+        description: "Контент блока обновлен"
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обновить блок",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleSave = async () => {
     setLoading(true);
     
-    toast({
-      title: "Сохранено",
-      description: "Все изменения сохранены"
-    });
+    try {
+      if (id) {
+        await fetch('https://functions.poehali.dev/6ef235f2-9501-4c64-9cac-1c75801c81c0', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            project_id: parseInt(id),
+            name: projectName
+          })
+        });
+      }
+      
+      toast({
+        title: "Сохранено",
+        description: "Все изменения сохранены"
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось сохранить изменения",
+        variant: "destructive"
+      });
+    }
     
     setLoading(false);
   };
@@ -256,7 +323,7 @@ const SiteEditor = () => {
                       key={block.id}
                       block={block}
                       isSelected={selectedBlockId === block.id}
-                      onSelect={() => setSelectedBlockId(block.id)}
+                      onSelect={() => handleSelectBlock(block.id)}
                       onDelete={() => handleDeleteBlock(block.id)}
                     />
                   ))}
@@ -268,23 +335,91 @@ const SiteEditor = () => {
           {rightPanelOpen && selectedBlockId && (
             <aside className="w-80 border-l border-border bg-card flex flex-col shadow-sm">
               <div className="p-4 border-b border-border flex items-center justify-between">
-                <h3 className="text-sm font-semibold">Свойства блока</h3>
+                <h3 className="text-sm font-semibold">Редактирование блока</h3>
                 <Button variant="ghost" size="icon" onClick={() => setRightPanelOpen(false)}>
                   <Icon name="X" size={16} />
                 </Button>
               </div>
               
               <ScrollArea className="flex-1">
-                <div className="p-4 space-y-4">
-                  <div>
-                    <Label>Заголовок</Label>
-                    <Input placeholder="Введите заголовок" className="mt-2" />
+                <Tabs defaultValue="content" className="w-full">
+                  <div className="px-4 pt-4">
+                    <TabsList className="grid grid-cols-3 w-full">
+                      <TabsTrigger value="content">Контент</TabsTrigger>
+                      <TabsTrigger value="styles">Стили</TabsTrigger>
+                      <TabsTrigger value="settings">Настройки</TabsTrigger>
+                    </TabsList>
                   </div>
-                  <div>
-                    <Label>Текст</Label>
-                    <Input placeholder="Введите текст" className="mt-2" />
-                  </div>
-                </div>
+
+                  <TabsContent value="content" className="p-4 space-y-4">
+                    <div>
+                      <Label>Заголовок</Label>
+                      <Input 
+                        placeholder="Введите заголовок" 
+                        className="mt-2"
+                        value={editingContent.title || ''}
+                        onChange={(e) => setEditingContent({ ...editingContent, title: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Текст</Label>
+                      <Textarea
+                        placeholder="Введите текст"
+                        className="mt-2"
+                        value={editingContent.text || ''}
+                        onChange={(e) => setEditingContent({ ...editingContent, text: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Ссылка (URL)</Label>
+                      <Input 
+                        placeholder="https://example.com" 
+                        className="mt-2"
+                        value={editingContent.url || ''}
+                        onChange={(e) => setEditingContent({ ...editingContent, url: e.target.value })}
+                      />
+                    </div>
+                    <Button onClick={handleUpdateBlockContent} className="w-full">
+                      <Icon name="Save" size={16} className="mr-2" />
+                      Сохранить изменения
+                    </Button>
+                  </TabsContent>
+
+                  <TabsContent value="styles" className="p-4 space-y-4">
+                    <div>
+                      <Label>Цвет фона</Label>
+                      <Input type="color" className="mt-2 h-10" />
+                    </div>
+                    <div>
+                      <Label>Цвет текста</Label>
+                      <Input type="color" className="mt-2 h-10" />
+                    </div>
+                    <div>
+                      <Label>Отступы (padding)</Label>
+                      <Input placeholder="20px" className="mt-2" />
+                    </div>
+                    <div>
+                      <Label>Размер шрифта</Label>
+                      <Input placeholder="16px" className="mt-2" />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="settings" className="p-4 space-y-4">
+                    <div>
+                      <Label>CSS класс</Label>
+                      <Input placeholder="my-custom-class" className="mt-2" />
+                    </div>
+                    <div>
+                      <Label>Анимация</Label>
+                      <select className="mt-2 w-full p-2 border border-border rounded-md bg-background">
+                        <option>Без анимации</option>
+                        <option>Плавное появление</option>
+                        <option>Слайд снизу</option>
+                        <option>Увеличение</option>
+                      </select>
+                    </div>
+                  </TabsContent>
+                </Tabs>
               </ScrollArea>
             </aside>
           )}
