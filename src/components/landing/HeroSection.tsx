@@ -11,7 +11,7 @@ export const HeroSection = () => {
       <div className="absolute top-20 -left-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse pointer-events-none" />
       <div className="absolute bottom-20 -right-20 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse pointer-events-none" />
       
-
+      <div className="container mx-auto relative z-10">
         <div className="inline-block mb-6">
           <span className="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold border border-primary/20">
             🚀 Запустите бизнес за 24 часа
@@ -72,7 +72,6 @@ export const HeroSection = () => {
             <p className="text-sm text-muted-foreground max-w-[150px]">Результат как у агентств</p>
           </div>
         </div>
-      </div>
       </div>
     </section>
   );
