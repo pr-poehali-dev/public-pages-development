@@ -5,10 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
+import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const SiteEditor = () => {
   const navigate = useNavigate();
@@ -16,41 +16,49 @@ const SiteEditor = () => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
-  const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
 
   const pages = [
-    { id: '1', name: 'Главная', path: '/', active: true },
-    { id: '2', name: 'О нас', path: '/about', active: false },
-    { id: '3', name: 'Контакты', path: '/contact', active: false }
+    { id: '1', name: 'Главная', path: '/', active: true, icon: 'Home' },
+    { id: '2', name: 'О нас', path: '/about', active: false, icon: 'Info' },
+    { id: '3', name: 'Контакты', path: '/contact', active: false, icon: 'Mail' }
   ];
 
   const blocks = [
-    { id: 'hero', name: 'Заголовок', icon: 'Heading1' },
-    { id: 'text', name: 'Текст', icon: 'Type' },
-    { id: 'image', name: 'Изображение', icon: 'Image' },
-    { id: 'gallery', name: 'Галерея', icon: 'Images' },
-    { id: 'form', name: 'Форма', icon: 'Mail' },
-    { id: 'button', name: 'Кнопка', icon: 'MousePointerClick' },
-    { id: 'video', name: 'Видео', icon: 'Video' },
-    { id: 'map', name: 'Карта', icon: 'Map' },
-    { id: 'reviews', name: 'Отзывы', icon: 'MessageSquare' },
-    { id: 'pricing', name: 'Цены', icon: 'DollarSign' },
-    { id: 'faq', name: 'FAQ', icon: 'HelpCircle' }
+    { id: 'hero', name: 'Заголовок', icon: 'Heading1', category: 'Контент', color: 'blue' },
+    { id: 'text', name: 'Текст', icon: 'Type', category: 'Контент', color: 'blue' },
+    { id: 'image', name: 'Изображение', icon: 'Image', category: 'Медиа', color: 'purple' },
+    { id: 'gallery', name: 'Галерея', icon: 'Images', category: 'Медиа', color: 'purple' },
+    { id: 'video', name: 'Видео', icon: 'Video', category: 'Медиа', color: 'purple' },
+    { id: 'form', name: 'Форма', icon: 'Mail', category: 'Формы', color: 'green' },
+    { id: 'button', name: 'Кнопка', icon: 'MousePointerClick', category: 'Действия', color: 'orange' },
+    { id: 'map', name: 'Карта', icon: 'Map', category: 'Интеграции', color: 'red' },
+    { id: 'reviews', name: 'Отзывы', icon: 'MessageSquare', category: 'Контент', color: 'blue' },
+    { id: 'pricing', name: 'Цены', icon: 'DollarSign', category: 'Коммерция', color: 'yellow' },
+    { id: 'faq', name: 'FAQ', icon: 'HelpCircle', category: 'Контент', color: 'blue' }
   ];
 
   const templates = [
-    { id: '1', name: 'Лендинг бизнеса', preview: '🏢' },
-    { id: '2', name: 'Интернет-магазин', preview: '🛒' },
-    { id: '3', name: 'Портфолио', preview: '🎨' },
-    { id: '4', name: 'Блог', preview: '📝' }
+    { id: '1', name: 'Бизнес лендинг', preview: '🏢', desc: 'Корпоративный сайт' },
+    { id: '2', name: 'Интернет-магазин', preview: '🛒', desc: 'E-commerce решение' },
+    { id: '3', name: 'Портфолио', preview: '🎨', desc: 'Для творческих людей' },
+    { id: '4', name: 'Блог', preview: '📝', desc: 'Личный или корпоративный' }
   ];
+
+  const getViewModeWidth = () => {
+    switch (viewMode) {
+      case 'mobile': return 'max-w-[375px]';
+      case 'tablet': return 'max-w-[768px]';
+      default: return 'w-full';
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      <header className="h-16 border-b border-border bg-white flex items-center justify-between px-6">
+      {/* Header */}
+      <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6 shadow-sm">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} className="hover:bg-primary/10">
             <Icon name="ArrowLeft" size={20} />
           </Button>
           
@@ -66,189 +74,198 @@ const SiteEditor = () => {
           ) : (
             <button
               onClick={() => setIsEditingName(true)}
-              className="text-lg font-semibold hover:text-primary transition-colors"
+              className="text-lg font-semibold hover:text-primary transition-colors flex items-center gap-2"
             >
+              <Icon name="Globe" size={20} className="text-primary" />
               {projectName}
             </button>
           )}
+          <Badge variant="outline" className="ml-2">Черновик</Badge>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 border border-border rounded-lg p-1">
+          <div className="flex items-center gap-1 border border-border rounded-lg p-1 bg-muted/50">
             <Button
               variant={viewMode === 'desktop' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('desktop')}
+              className="gap-2"
             >
               <Icon name="Monitor" size={16} />
+              <span className="hidden md:inline">Десктоп</span>
             </Button>
             <Button
               variant={viewMode === 'tablet' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('tablet')}
+              className="gap-2"
             >
               <Icon name="Tablet" size={16} />
+              <span className="hidden md:inline">Планшет</span>
             </Button>
             <Button
               variant={viewMode === 'mobile' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('mobile')}
+              className="gap-2"
             >
               <Icon name="Smartphone" size={16} />
+              <span className="hidden md:inline">Телефон</span>
             </Button>
           </div>
 
-          <Button variant="outline" size="sm">
-            <Icon name="Eye" className="mr-2" size={16} />
+          <div className="h-8 w-px bg-border" />
+
+          <Button variant="outline" size="sm" className="gap-2">
+            <Icon name="Eye" size={16} />
             Предпросмотр
           </Button>
-          <Button size="sm">
-            <Icon name="Save" className="mr-2" size={16} />
+          <Button variant="outline" size="sm" className="gap-2">
+            <Icon name="Save" size={16} />
             Сохранить
           </Button>
-          <Button size="sm" className="bg-green-600 hover:bg-green-700">
-            <Icon name="Rocket" className="mr-2" size={16} />
+          <Button size="sm" className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 gap-2">
+            <Icon name="Rocket" size={16} />
             Публиковать
           </Button>
 
-          <Button variant="ghost" size="icon">
+          <div className="h-8 w-px bg-border" />
+          
+          <ThemeToggle />
+          <Button variant="ghost" size="icon" className="hover:bg-primary/10">
             <Icon name="Settings" size={20} />
           </Button>
 
-          <button onClick={() => navigate('/dashboard/settings')} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-sm">
+          <button 
+            onClick={() => navigate('/dashboard/settings')} 
+            className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-sm hover:scale-110 transition-transform"
+          >
             ИП
           </button>
         </div>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
+        {/* Left Panel */}
         {leftPanelOpen && (
-          <aside className="w-64 border-r border-border bg-white flex flex-col">
-            <Tabs defaultValue="pages" className="flex-1 flex flex-col">
-              <div className="p-3 border-b border-border">
+          <aside className="w-72 border-r border-border bg-card flex flex-col shadow-sm">
+            <Tabs defaultValue="blocks" className="flex-1 flex flex-col">
+              <div className="p-4 border-b border-border">
                 <TabsList className="grid grid-cols-3 w-full">
-                  <TabsTrigger value="pages" className="text-xs">Страницы</TabsTrigger>
-                  <TabsTrigger value="blocks" className="text-xs">Блоки</TabsTrigger>
-                  <TabsTrigger value="templates" className="text-xs">Шаблоны</TabsTrigger>
+                  <TabsTrigger value="pages" className="text-xs gap-1">
+                    <Icon name="FileText" size={14} />
+                    Страницы
+                  </TabsTrigger>
+                  <TabsTrigger value="blocks" className="text-xs gap-1">
+                    <Icon name="Layout" size={14} />
+                    Блоки
+                  </TabsTrigger>
+                  <TabsTrigger value="templates" className="text-xs gap-1">
+                    <Icon name="Sparkles" size={14} />
+                    Шаблоны
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
-              <TabsContent value="pages" className="flex-1 m-0">
-                <ScrollArea className="h-full">
-                  <div className="p-3 space-y-2">
+              <TabsContent value="pages" className="flex-1 m-0 p-4 space-y-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-muted-foreground">Список страниц</h3>
+                  <Badge variant="secondary">{pages.length}</Badge>
+                </div>
+                <ScrollArea className="h-[calc(100vh-200px)]">
+                  <div className="space-y-2">
                     {pages.map((page) => (
-                      <button
+                      <Card
                         key={page.id}
-                        className={`w-full p-3 text-left rounded-lg transition-colors ${
+                        className={`p-3 cursor-pointer transition-all hover:shadow-md ${
                           page.active
-                            ? 'bg-primary/10 text-primary border border-primary/20'
-                            : 'hover:bg-muted/50 border border-transparent'
+                            ? 'bg-primary/5 border-primary/30 shadow-sm'
+                            : 'hover:border-primary/20'
                         }`}
                       >
-                        <div className="flex items-center gap-2">
-                          <Icon name="FileText" size={16} />
-                          <span className="font-medium text-sm">{page.name}</span>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                            page.active ? 'bg-primary/10' : 'bg-muted'
+                          }`}>
+                            <Icon name={page.icon} size={18} className={page.active ? 'text-primary' : 'text-muted-foreground'} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">{page.name}</div>
+                            <div className="text-xs text-muted-foreground">{page.path}</div>
+                          </div>
+                          {page.active && <Badge variant="default" className="text-xs">Активна</Badge>}
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1">{page.path}</div>
-                      </button>
+                      </Card>
                     ))}
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Icon name="Plus" className="mr-2" size={14} />
+                    <Button variant="outline" className="w-full gap-2" size="sm">
+                      <Icon name="Plus" size={14} />
                       Добавить страницу
                     </Button>
                   </div>
                 </ScrollArea>
               </TabsContent>
 
-              <TabsContent value="blocks" className="flex-1 m-0">
-                <ScrollArea className="h-full">
-                  <div className="p-3">
-                    <div className="space-y-2">
-                      {blocks.map((block) => (
-                        <button
-                          key={block.id}
-                          draggable
-                          onDragStart={(e) => e.dataTransfer.setData('blockId', block.id)}
-                          className="w-full p-3 border border-border rounded-lg hover:bg-muted/50 hover:border-primary/50 transition-all text-left flex items-center gap-3 group cursor-move"
-                        >
-                          <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                            <Icon name={block.icon} size={18} className="text-primary" />
+              <TabsContent value="blocks" className="flex-1 m-0 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground">Библиотека блоков</h3>
+                  <Badge variant="secondary">{blocks.length}+</Badge>
+                </div>
+                <ScrollArea className="h-[calc(100vh-200px)]">
+                  <div className="space-y-2">
+                    {blocks.map((block) => (
+                      <Card
+                        key={block.id}
+                        draggable
+                        onDragStart={(e) => e.dataTransfer.setData('blockId', block.id)}
+                        className="p-3 hover:shadow-md hover:border-primary/50 transition-all cursor-move group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-12 h-12 rounded-xl bg-${block.color}-500/10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                            <Icon name={block.icon} size={20} className={`text-${block.color}-600`} />
                           </div>
-                          <span className="text-sm font-medium">{block.name}</span>
-                        </button>
-                      ))}
-                    </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">{block.name}</div>
+                            <div className="text-xs text-muted-foreground">{block.category}</div>
+                          </div>
+                          <Icon name="GripVertical" size={16} className="text-muted-foreground" />
+                        </div>
+                      </Card>
+                    ))}
                   </div>
                 </ScrollArea>
               </TabsContent>
 
-              <TabsContent value="templates" className="flex-1 m-0">
-                <ScrollArea className="h-full">
-                  <div className="p-3 space-y-3">
+              <TabsContent value="templates" className="flex-1 m-0 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground">Готовые шаблоны</h3>
+                  <Badge variant="secondary">{templates.length}+</Badge>
+                </div>
+                <ScrollArea className="h-[calc(100vh-200px)]">
+                  <div className="space-y-3">
                     {templates.map((template) => (
-                      <Card key={template.id} className="p-4 hover:shadow-md transition-shadow cursor-pointer">
-                        <div className="aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 rounded-lg mb-3 flex items-center justify-center text-4xl">
+                      <Card key={template.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group">
+                        <div className="aspect-video bg-gradient-to-br from-primary/10 via-secondary/10 to-purple-500/10 flex items-center justify-center text-5xl group-hover:scale-105 transition-transform">
                           {template.preview}
                         </div>
-                        <h4 className="font-medium text-sm">{template.name}</h4>
+                        <div className="p-3">
+                          <div className="font-semibold text-sm mb-1">{template.name}</div>
+                          <div className="text-xs text-muted-foreground">{template.desc}</div>
+                        </div>
                       </Card>
                     ))}
                   </div>
                 </ScrollArea>
               </TabsContent>
             </Tabs>
-
-            <div className="p-3 border-t border-border">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full text-primary"
-                onClick={() => {}}
-              >
-                <Icon name="Sparkles" className="mr-2" size={16} />
-                Сгенерировать через AI
-              </Button>
-            </div>
           </aside>
         )}
 
-        <main className="flex-1 bg-muted/30 flex flex-col">
-          <div className="p-4 border-b border-border bg-white flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLeftPanelOpen(!leftPanelOpen)}
-            >
-              <Icon name={leftPanelOpen ? 'PanelLeftClose' : 'PanelLeftOpen'} size={18} />
-            </Button>
-
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Масштаб:</span>
-              <Button variant="ghost" size="sm">50%</Button>
-              <Button variant="ghost" size="sm">75%</Button>
-              <Button variant="ghost" size="sm" className="font-semibold">100%</Button>
-            </div>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setRightPanelOpen(!rightPanelOpen)}
-            >
-              <Icon name={rightPanelOpen ? 'PanelRightClose' : 'PanelRightOpen'} size={18} />
-            </Button>
-          </div>
-
-          <ScrollArea className="flex-1">
-            <div className="p-8 flex justify-center">
-              <div
-                className={`bg-white shadow-xl transition-all ${
-                  viewMode === 'desktop'
-                    ? 'w-full max-w-6xl'
-                    : viewMode === 'tablet'
-                    ? 'w-[768px]'
-                    : 'w-[375px]'
-                }`}
-                style={{ minHeight: '800px' }}
+        {/* Canvas Area */}
+        <main className="flex-1 bg-muted/30 p-6 overflow-auto">
+          <div className="flex flex-col items-center">
+            <div className={`${getViewModeWidth()} bg-card rounded-lg shadow-2xl border border-border min-h-[600px] transition-all duration-300`}>
+              <div 
+                className="p-8 min-h-[600px]"
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
                   e.preventDefault();
@@ -256,179 +273,54 @@ const SiteEditor = () => {
                   console.log('Dropped block:', blockId);
                 }}
               >
-                <div className="p-8 text-center text-muted-foreground">
-                  <Icon name="MousePointer2" size={48} className="mx-auto mb-4 opacity-20" />
-                  <p>Перетащите блоки сюда или используйте AI-генерацию</p>
-                  <Button className="mt-4" onClick={() => {}}>
-                    <Icon name="Sparkles" className="mr-2" size={16} />
-                    Создать страницу через AI
-                  </Button>
+                <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+                  <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mb-6">
+                    <Icon name="MousePointerClick" size={48} className="text-primary" />
+                  </div>
+                  <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    Начните создавать
+                  </h2>
+                  <p className="text-muted-foreground text-lg mb-8 max-w-md">
+                    Перетащите блоки из левой панели или выберите готовый шаблон
+                  </p>
+                  <div className="flex gap-3">
+                    <Button className="gap-2">
+                      <Icon name="Wand2" size={16} />
+                      AI-генерация сайта
+                    </Button>
+                    <Button variant="outline" className="gap-2">
+                      <Icon name="Sparkles" size={16} />
+                      Выбрать шаблон
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </ScrollArea>
+          </div>
         </main>
 
+        {/* Right Panel */}
         {rightPanelOpen && (
-          <aside className="w-80 border-l border-border bg-white flex flex-col">
-            <div className="p-4 border-b border-border">
-              <h3 className="font-semibold">Свойства элемента</h3>
+          <aside className="w-80 border-l border-border bg-card flex flex-col shadow-sm">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <h3 className="font-semibold flex items-center gap-2">
+                <Icon name="Sliders" size={18} className="text-primary" />
+                Свойства элемента
+              </h3>
+              <Button variant="ghost" size="icon" onClick={() => setRightPanelOpen(false)}>
+                <Icon name="X" size={18} />
+              </Button>
             </div>
-
-            {selectedElement ? (
-              <Tabs defaultValue="content" className="flex-1 flex flex-col">
-                <div className="px-3 pt-3">
-                  <TabsList className="grid grid-cols-3 w-full">
-                    <TabsTrigger value="content" className="text-xs">Контент</TabsTrigger>
-                    <TabsTrigger value="style" className="text-xs">Стили</TabsTrigger>
-                    <TabsTrigger value="advanced" className="text-xs">Доп.</TabsTrigger>
-                  </TabsList>
-                </div>
-
-                <TabsContent value="content" className="flex-1 m-0">
-                  <ScrollArea className="h-full">
-                    <div className="p-4 space-y-4">
-                      <div className="space-y-2">
-                        <Label>Текст заголовка</Label>
-                        <Input placeholder="Введите текст" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Описание</Label>
-                        <textarea
-                          className="w-full p-2 border border-border rounded-md resize-none"
-                          rows={3}
-                          placeholder="Введите описание"
-                        />
-                      </div>
-                    </div>
-                  </ScrollArea>
-                </TabsContent>
-
-                <TabsContent value="style" className="flex-1 m-0">
-                  <ScrollArea className="h-full">
-                    <div className="p-4 space-y-4">
-                      <div className="space-y-2">
-                        <Label>Цвет фона</Label>
-                        <div className="flex gap-2">
-                          <Input type="color" defaultValue="#0EA5E9" className="w-16 h-10" />
-                          <Input defaultValue="#0EA5E9" className="flex-1" />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Шрифт</Label>
-                        <Select defaultValue="inter">
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="inter">Inter</SelectItem>
-                            <SelectItem value="roboto">Roboto</SelectItem>
-                            <SelectItem value="opensans">Open Sans</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Размер текста</Label>
-                        <Slider defaultValue={[16]} min={12} max={72} step={1} />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Отступы (padding)</Label>
-                        <Slider defaultValue={[20]} min={0} max={100} step={4} />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Тень</Label>
-                        <Select defaultValue="none">
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">Без тени</SelectItem>
-                            <SelectItem value="sm">Маленькая</SelectItem>
-                            <SelectItem value="md">Средняя</SelectItem>
-                            <SelectItem value="lg">Большая</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </ScrollArea>
-                </TabsContent>
-
-                <TabsContent value="advanced" className="flex-1 m-0">
-                  <ScrollArea className="h-full">
-                    <div className="p-4">
-                      <Tabs defaultValue="animation" orientation="vertical">
-                        <TabsList className="flex flex-col h-auto space-y-1">
-                          <TabsTrigger value="animation" className="w-full justify-start">
-                            <Icon name="Zap" className="mr-2" size={14} />
-                            Анимация
-                          </TabsTrigger>
-                          <TabsTrigger value="responsive" className="w-full justify-start">
-                            <Icon name="Smartphone" className="mr-2" size={14} />
-                            Адаптивность
-                          </TabsTrigger>
-                          <TabsTrigger value="seo" className="w-full justify-start">
-                            <Icon name="Search" className="mr-2" size={14} />
-                            SEO
-                          </TabsTrigger>
-                          <TabsTrigger value="conditions" className="w-full justify-start">
-                            <Icon name="Filter" className="mr-2" size={14} />
-                            Условия
-                          </TabsTrigger>
-                          <TabsTrigger value="integrations" className="w-full justify-start">
-                            <Icon name="Plug" className="mr-2" size={14} />
-                            Интеграции
-                          </TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="animation" className="mt-0 ml-4">
-                          <div className="space-y-3">
-                            <Label>Эффект появления</Label>
-                            <Select defaultValue="fade">
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="fade">Плавное появление</SelectItem>
-                                <SelectItem value="slide">Слайд</SelectItem>
-                                <SelectItem value="zoom">Увеличение</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </TabsContent>
-
-                        <TabsContent value="integrations" className="mt-0 ml-4">
-                          <div className="space-y-3">
-                            <Button variant="outline" size="sm" className="w-full justify-start">
-                              <Icon name="Mail" className="mr-2" size={14} />
-                              Email уведомления
-                            </Button>
-                            <Button variant="outline" size="sm" className="w-full justify-start">
-                              <Icon name="MessageSquare" className="mr-2" size={14} />
-                              Telegram
-                            </Button>
-                            <Button variant="outline" size="sm" className="w-full justify-start">
-                              <Icon name="CreditCard" className="mr-2" size={14} />
-                              ЮKassa
-                            </Button>
-                          </div>
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  </ScrollArea>
-                </TabsContent>
-              </Tabs>
-            ) : (
-              <div className="flex-1 flex items-center justify-center p-8 text-center text-muted-foreground">
-                <div>
-                  <Icon name="MousePointerClick" size={48} className="mx-auto mb-4 opacity-20" />
-                  <p>Выберите элемент на странице для редактирования</p>
+            <ScrollArea className="flex-1">
+              <div className="p-4 space-y-6">
+                <div className="text-center py-12">
+                  <Icon name="MousePointerClick" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <p className="text-sm text-muted-foreground">
+                    Выберите элемент на холсте<br />для редактирования
+                  </p>
                 </div>
               </div>
-            )}
+            </ScrollArea>
           </aside>
         )}
       </div>

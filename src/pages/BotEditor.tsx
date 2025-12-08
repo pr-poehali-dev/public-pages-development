@@ -2,78 +2,60 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const BotEditor = () => {
   const navigate = useNavigate();
   const [botName, setBotName] = useState('Новый бот');
   const [isEditingName, setIsEditingName] = useState(false);
-  const [selectedNode, setSelectedNode] = useState<string | null>('msg-1');
+  const [leftPanelOpen, setLeftPanelOpen] = useState(true);
+  const [rightPanelOpen, setRightPanelOpen] = useState(true);
 
-  const nodeLibrary = [
-    {
-      category: 'Сообщения',
-      nodes: [
-        { id: 'message', name: 'Сообщение', icon: 'MessageSquare', color: 'bg-blue-500' },
-        { id: 'buttons', name: 'Кнопки', icon: 'Square', color: 'bg-blue-600' },
-        { id: 'media', name: 'Медиа', icon: 'Image', color: 'bg-purple-500' }
-      ]
-    },
-    {
-      category: 'Логика',
-      nodes: [
-        { id: 'condition', name: 'Условие', icon: 'GitBranch', color: 'bg-orange-500' },
-        { id: 'delay', name: 'Задержка', icon: 'Clock', color: 'bg-yellow-500' },
-        { id: 'menu', name: 'Меню', icon: 'List', color: 'bg-green-500' }
-      ]
-    },
-    {
-      category: 'Данные',
-      nodes: [
-        { id: 'api', name: 'API-вызов', icon: 'Webhook', color: 'bg-indigo-500' },
-        { id: 'payment', name: 'Платеж', icon: 'CreditCard', color: 'bg-emerald-500' },
-        { id: 'products', name: 'Товары', icon: 'ShoppingBag', color: 'bg-pink-500' }
-      ]
-    },
-    {
-      category: 'Контент',
-      nodes: [
-        { id: 'gallery', name: 'Галерея', icon: 'Images', color: 'bg-purple-600' },
-        { id: 'video', name: 'Видео/Аудио', icon: 'Video', color: 'bg-red-500' },
-        { id: 'file', name: 'Файл', icon: 'FileText', color: 'bg-gray-500' },
-        { id: 'note', name: 'Заметка', icon: 'StickyNote', color: 'bg-yellow-400' }
-      ]
-    }
+  const nodeTypes = [
+    { id: 'message', name: 'Сообщение', icon: 'MessageSquare', desc: 'Отправить текст/медиа', color: 'blue' },
+    { id: 'condition', name: 'Условие', icon: 'GitBranch', desc: 'Ветвление логики', color: 'purple' },
+    { id: 'delay', name: 'Задержка', icon: 'Clock', desc: 'Умная задержка', color: 'orange' },
+    { id: 'api', name: 'API-вызов', icon: 'Code', desc: 'Внешний запрос', color: 'green' },
+    { id: 'payment', name: 'Платеж', icon: 'CreditCard', desc: 'Прием оплаты', color: 'yellow' },
+    { id: 'menu', name: 'Меню', icon: 'List', desc: 'Кнопки выбора', color: 'indigo' },
+    { id: 'gallery', name: 'Галерея', icon: 'Images', desc: 'Несколько фото', color: 'pink' },
+    { id: 'video', name: 'Видео', icon: 'Video', desc: 'Отправка видео', color: 'red' },
+    { id: 'file', name: 'Файл', icon: 'File', desc: 'Документы', color: 'gray' },
+    { id: 'product', name: 'Товары', icon: 'ShoppingBag', desc: 'Каталог товаров', color: 'teal' },
+    { id: 'note', name: 'Заметка', icon: 'StickyNote', desc: 'Комментарий', color: 'cyan' }
   ];
 
-  const canvasNodes = [
-    { id: 'msg-1', type: 'message', label: 'Приветствие', x: 100, y: 100, color: 'bg-blue-500' },
-    { id: 'btn-1', type: 'buttons', label: 'Выбор действия', x: 300, y: 100, color: 'bg-blue-600' },
-    { id: 'cond-1', type: 'condition', label: 'Проверка', x: 500, y: 100, color: 'bg-orange-500' }
+  const templates = [
+    { id: '1', name: 'Лид-магнит', icon: 'Magnet', desc: 'Сбор контактов с подарком', color: 'green' },
+    { id: '2', name: 'Интернет-магазин', icon: 'ShoppingCart', desc: 'Продажа товаров', color: 'blue' },
+    { id: '3', name: 'Поддержка', icon: 'Headphones', desc: 'FAQ и техподдержка', color: 'purple' },
+    { id: '4', name: 'Запись на услуги', icon: 'Calendar', desc: 'Бронирование времени', color: 'orange' },
+    { id: '5', name: 'Опрос', icon: 'ListChecks', desc: 'Сбор обратной связи', color: 'pink' },
+    { id: '6', name: 'Обучающий курс', icon: 'GraduationCap', desc: 'Уроки и тесты', color: 'indigo' }
   ];
 
-  const actions = [
-    { category: 'Метки и поля', items: ['Добавить метку', 'Удалить метку', 'Изменить переменную'] },
-    { category: 'Системные', items: ['Остановить бота', 'Запустить сценарий', 'Отправить email'] },
-    { category: 'AI', items: ['Запрос к ChatGPT', 'Генерация текста', 'Анализ сообщения'] },
-    { category: 'Интеграции', items: ['GetCourse', 'Google Sheets', 'AmoCRM', 'Платежи'] }
+  const integrations = [
+    { id: 'telegram', name: 'Telegram', icon: 'Send', connected: true, color: 'blue' },
+    { id: 'whatsapp', name: 'WhatsApp', icon: 'MessageCircle', connected: false, color: 'green' },
+    { id: 'vk', name: 'VK', icon: 'Share2', connected: false, color: 'indigo' },
+    { id: 'chatgpt', name: 'ChatGPT', icon: 'Sparkles', connected: true, color: 'purple' },
+    { id: 'sheets', name: 'Google Sheets', icon: 'Table', connected: false, color: 'green' },
+    { id: 'amocrm', name: 'AmoCRM', icon: 'Users', connected: false, color: 'orange' }
   ];
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      <header className="h-16 border-b border-border bg-white flex items-center justify-between px-6">
+      <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6 shadow-sm">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} className="hover:bg-primary/10">
             <Icon name="ArrowLeft" size={20} />
           </Button>
-
+          
           {isEditingName ? (
             <Input
               value={botName}
@@ -88,303 +70,264 @@ const BotEditor = () => {
               onClick={() => setIsEditingName(true)}
               className="text-lg font-semibold hover:text-primary transition-colors flex items-center gap-2"
             >
-              <Icon name="Bot" size={20} />
+              <Icon name="Bot" size={20} className="text-primary" />
               {botName}
             </button>
           )}
+          <Badge variant="outline" className="ml-2">Черновик</Badge>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="sm">
-            <Icon name="Play" className="mr-2" size={16} />
+          <Button variant="outline" size="sm" className="gap-2">
+            <Icon name="Play" size={16} />
             Тестировать
           </Button>
-          <Button size="sm">
-            <Icon name="Save" className="mr-2" size={16} />
+          <Button variant="outline" size="sm" className="gap-2">
+            <Icon name="Save" size={16} />
             Сохранить
           </Button>
-          <Button size="sm" className="bg-green-600 hover:bg-green-700">
-            <Icon name="Rocket" className="mr-2" size={16} />
-            Запустить
+          <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 gap-2">
+            <Icon name="Rocket" size={16} />
+            Запустить бота
           </Button>
 
-          <Button variant="ghost" size="icon">
+          <div className="h-8 w-px bg-border" />
+          
+          <ThemeToggle />
+          <Button variant="ghost" size="icon" className="hover:bg-primary/10">
             <Icon name="Settings" size={20} />
           </Button>
+
+          <button 
+            onClick={() => navigate('/dashboard/settings')} 
+            className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-semibold text-sm hover:scale-110 transition-transform"
+          >
+            ИП
+          </button>
         </div>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <aside className="w-64 border-r border-border bg-white flex flex-col">
-          <div className="p-4 border-b border-border">
-            <h3 className="font-semibold text-sm mb-2">Библиотека узлов</h3>
-            <Input placeholder="Поиск..." className="h-8 text-sm" />
-          </div>
-
-          <ScrollArea className="flex-1">
-            <div className="p-3 space-y-4">
-              {nodeLibrary.map((category) => (
-                <div key={category.category}>
-                  <h4 className="text-xs font-semibold text-muted-foreground mb-2 px-2">
-                    {category.category}
-                  </h4>
-                  <div className="space-y-1">
-                    {category.nodes.map((node) => (
-                      <button
-                        key={node.id}
-                        draggable
-                        onDragStart={(e) => e.dataTransfer.setData('nodeType', node.id)}
-                        className="w-full p-2 rounded-lg hover:bg-muted/50 transition-colors text-left flex items-center gap-2 group cursor-move"
-                      >
-                        <div className={`w-8 h-8 rounded ${node.color} flex items-center justify-center text-white`}>
-                          <Icon name={node.icon} size={14} />
-                        </div>
-                        <span className="text-sm">{node.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-        </aside>
-
-        <main className="flex-1 flex flex-col bg-muted/30">
-          <div className="p-3 border-b border-border bg-white flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm">
-                <Icon name="ZoomIn" size={16} />
-              </Button>
-              <span className="text-sm text-muted-foreground">100%</span>
-              <Button variant="ghost" size="sm">
-                <Icon name="ZoomOut" size={16} />
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm">
-                <Icon name="Undo" size={16} />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <Icon name="Redo" size={16} />
-              </Button>
-            </div>
-
-            <Button variant="ghost" size="sm">
-              <Icon name="Grid3x3" size={16} className="mr-2" />
-              Сетка
-            </Button>
-          </div>
-
-          <div className="flex-1 relative overflow-hidden">
-            <div
-              className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault();
-                const nodeType = e.dataTransfer.getData('nodeType');
-                console.log('Dropped node type:', nodeType);
-              }}
-            >
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                <defs>
-                  <marker
-                    id="arrowhead"
-                    markerWidth="10"
-                    markerHeight="7"
-                    refX="9"
-                    refY="3.5"
-                    orient="auto"
-                  >
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af" />
-                  </marker>
-                </defs>
-                
-                <line
-                  x1="220"
-                  y1="150"
-                  x2="300"
-                  y2="150"
-                  stroke="#9ca3af"
-                  strokeWidth="2"
-                  markerEnd="url(#arrowhead)"
-                />
-                <line
-                  x1="420"
-                  y1="150"
-                  x2="500"
-                  y2="150"
-                  stroke="#9ca3af"
-                  strokeWidth="2"
-                  markerEnd="url(#arrowhead)"
-                />
-              </svg>
-
-              {canvasNodes.map((node) => (
-                <button
-                  key={node.id}
-                  onClick={() => setSelectedNode(node.id)}
-                  className={`absolute w-32 p-3 rounded-lg bg-white border-2 transition-all hover:shadow-lg ${
-                    selectedNode === node.id ? 'border-primary shadow-lg' : 'border-border'
-                  }`}
-                  style={{ left: node.x, top: node.y }}
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className={`w-6 h-6 rounded ${node.color} flex items-center justify-center text-white`}>
-                      <Icon name="MessageSquare" size={12} />
-                    </div>
-                    <span className="text-xs font-semibold truncate">{node.label}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <div className="w-3 h-3 rounded-full bg-gray-300" />
-                    <div className="w-3 h-3 rounded-full bg-gray-300" />
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <div className="absolute bottom-4 right-4 w-48 h-32 bg-white border-2 border-border rounded-lg overflow-hidden">
-              <div className="text-xs font-semibold p-2 bg-muted border-b border-border">Мини-карта</div>
-              <div className="p-2 bg-muted/30">
-                <div className="w-2 h-2 bg-primary rounded-sm" style={{ marginLeft: '10px', marginTop: '10px' }} />
-                <div className="w-2 h-2 bg-primary rounded-sm" style={{ marginLeft: '30px', marginTop: '-8px' }} />
-                <div className="w-2 h-2 bg-primary rounded-sm" style={{ marginLeft: '50px', marginTop: '-8px' }} />
-              </div>
-            </div>
-          </div>
-        </main>
-
-        <aside className="w-80 border-l border-border bg-white flex flex-col">
-          <div className="p-4 border-b border-border">
-            <h3 className="font-semibold">Свойства узла</h3>
-            {selectedNode && <p className="text-xs text-muted-foreground mt-1">{selectedNode}</p>}
-          </div>
-
-          {selectedNode ? (
-            <Tabs defaultValue="content" className="flex-1 flex flex-col">
-              <div className="px-3 pt-3">
-                <TabsList className="grid grid-cols-2 w-full">
-                  <TabsTrigger value="content">Контент</TabsTrigger>
-                  <TabsTrigger value="actions">Действия</TabsTrigger>
+        {leftPanelOpen && (
+          <aside className="w-72 border-r border-border bg-card flex flex-col shadow-sm">
+            <Tabs defaultValue="nodes" className="flex-1 flex flex-col">
+              <div className="p-4 border-b border-border">
+                <TabsList className="grid grid-cols-3 w-full">
+                  <TabsTrigger value="nodes" className="text-xs gap-1">
+                    <Icon name="Box" size={14} />
+                    Узлы
+                  </TabsTrigger>
+                  <TabsTrigger value="templates" className="text-xs gap-1">
+                    <Icon name="Sparkles" size={14} />
+                    Шаблоны
+                  </TabsTrigger>
+                  <TabsTrigger value="integrations" className="text-xs gap-1">
+                    <Icon name="Plug" size={14} />
+                    Связи
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
-              <TabsContent value="content" className="flex-1 m-0">
-                <ScrollArea className="h-full">
-                  <div className="p-4 space-y-4">
-                    <div className="space-y-2">
-                      <Label>Текст сообщения</Label>
-                      <textarea
-                        className="w-full p-2 border border-border rounded-md resize-none"
-                        rows={4}
-                        placeholder="Привет! 👋 Как я могу помочь?"
-                        defaultValue="Добро пожаловать! Выберите действие:"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Кнопки</Label>
-                      <div className="space-y-2">
-                        <div className="flex gap-2">
-                          <Input placeholder="Текст кнопки" defaultValue="Заказать" />
-                          <Button variant="outline" size="icon">
-                            <Icon name="X" size={16} />
-                          </Button>
+              <TabsContent value="nodes" className="flex-1 m-0 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground">Библиотека узлов</h3>
+                  <Badge variant="secondary">{nodeTypes.length}+</Badge>
+                </div>
+                <ScrollArea className="h-[calc(100vh-200px)]">
+                  <div className="space-y-2">
+                    {nodeTypes.map((node) => (
+                      <Card
+                        key={node.id}
+                        draggable
+                        onDragStart={(e) => e.dataTransfer.setData('nodeId', node.id)}
+                        className="p-3 hover:shadow-md hover:border-primary/50 transition-all cursor-move group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                            <Icon name={node.icon} size={20} className="text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">{node.name}</div>
+                            <div className="text-xs text-muted-foreground">{node.desc}</div>
+                          </div>
+                          <Icon name="GripVertical" size={16} className="text-muted-foreground" />
                         </div>
-                        <div className="flex gap-2">
-                          <Input placeholder="Текст кнопки" defaultValue="Поддержка" />
-                          <Button variant="outline" size="icon">
-                            <Icon name="X" size={16} />
-                          </Button>
-                        </div>
-                        <Button variant="outline" size="sm" className="w-full">
-                          <Icon name="Plus" className="mr-2" size={14} />
-                          Добавить кнопку
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Медиа</Label>
-                      <Button variant="outline" size="sm" className="w-full justify-start">
-                        <Icon name="Upload" className="mr-2" size={14} />
-                        Загрузить изображение
-                      </Button>
-                    </div>
+                      </Card>
+                    ))}
                   </div>
                 </ScrollArea>
               </TabsContent>
 
-              <TabsContent value="actions" className="flex-1 m-0">
-                <ScrollArea className="h-full">
-                  <div className="p-4">
-                    <div className="space-y-3 mb-4">
-                      <h4 className="text-sm font-semibold">Action Picker</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Добавьте действия, которые выполнятся при срабатывании узла
-                      </p>
-                    </div>
-
-                    {actions.map((category) => (
-                      <div key={category.category} className="mb-4">
-                        <h5 className="text-xs font-semibold text-muted-foreground mb-2">
-                          {category.category}
-                        </h5>
-                        <div className="space-y-1">
-                          {category.items.map((item) => (
-                            <button
-                              key={item}
-                              className="w-full p-2 text-left text-sm rounded hover:bg-muted/50 transition-colors"
-                            >
-                              {item}
-                            </button>
-                          ))}
+              <TabsContent value="templates" className="flex-1 m-0 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground">Готовые сценарии</h3>
+                  <Badge variant="secondary">{templates.length}+</Badge>
+                </div>
+                <ScrollArea className="h-[calc(100vh-200px)]">
+                  <div className="space-y-3">
+                    {templates.map((template) => (
+                      <Card key={template.id} className="p-4 hover:shadow-lg transition-shadow cursor-pointer group">
+                        <div className="flex items-start gap-3">
+                          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0">
+                            <Icon name={template.icon} size={24} className="text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-semibold text-sm mb-1">{template.name}</div>
+                            <div className="text-xs text-muted-foreground leading-relaxed">{template.desc}</div>
+                          </div>
                         </div>
-                      </div>
+                      </Card>
                     ))}
+                  </div>
+                </ScrollArea>
+              </TabsContent>
 
-                    <Button variant="outline" size="sm" className="w-full mt-4">
-                      <Icon name="Plus" className="mr-2" size={14} />
-                      Добавить действие
-                    </Button>
+              <TabsContent value="integrations" className="flex-1 m-0 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground">Интеграции</h3>
+                  <Badge variant="secondary">{integrations.filter(i => i.connected).length}/{integrations.length}</Badge>
+                </div>
+                <ScrollArea className="h-[calc(100vh-200px)]">
+                  <div className="space-y-2">
+                    {integrations.map((integration) => (
+                      <Card key={integration.id} className="p-3 hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <Icon name={integration.icon} size={18} className="text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">{integration.name}</div>
+                          </div>
+                          {integration.connected ? (
+                            <Badge variant="default" className="bg-green-100 text-green-700 border-green-200">
+                              Подключен
+                            </Badge>
+                          ) : (
+                            <Button variant="outline" size="sm" className="text-xs">
+                              Подключить
+                            </Button>
+                          )}
+                        </div>
+                      </Card>
+                    ))}
                   </div>
                 </ScrollArea>
               </TabsContent>
             </Tabs>
-          ) : (
-            <div className="flex-1 flex items-center justify-center p-8 text-center text-muted-foreground">
-              <div>
-                <Icon name="MousePointerClick" size={48} className="mx-auto mb-4 opacity-20" />
-                <p>Выберите узел для редактирования</p>
+          </aside>
+        )}
+
+        <main className="flex-1 bg-muted/30 p-6 overflow-auto relative">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)',
+            backgroundSize: '20px 20px'
+          }} />
+          
+          <div className="relative h-full flex items-center justify-center">
+            <div 
+              className="w-full max-w-4xl"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const nodeId = e.dataTransfer.getData('nodeId');
+                console.log('Dropped node:', nodeId);
+              }}
+            >
+              <div className="flex flex-col items-center justify-center min-h-[500px] text-center">
+                <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center mb-8 relative">
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-xl animate-pulse" />
+                  <Icon name="Workflow" size={64} className="text-primary relative z-10" />
+                </div>
+                <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Создайте сценарий бота
+                </h2>
+                <p className="text-muted-foreground text-lg mb-10 max-w-lg leading-relaxed">
+                  Перетащите узлы из левой панели на холст и соедините их для создания логики работы бота
+                </p>
+                <div className="flex gap-4">
+                  <Button className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                    <Icon name="Wand2" size={16} />
+                    AI-генерация сценария
+                  </Button>
+                  <Button variant="outline" className="gap-2">
+                    <Icon name="Sparkles" size={16} />
+                    Выбрать шаблон
+                  </Button>
+                  <Button variant="outline" className="gap-2">
+                    <Icon name="Play" size={16} />
+                    Открыть обучение
+                  </Button>
+                </div>
+
+                <div className="mt-16 grid grid-cols-3 gap-4 max-w-2xl">
+                  <Card className="p-4 border-2 border-blue-500/30 bg-blue-500/5">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center mb-3 mx-auto">
+                      <Icon name="MessageSquare" size={20} className="text-blue-600" />
+                    </div>
+                    <div className="text-sm font-medium text-center">Приветствие</div>
+                  </Card>
+                  <div className="flex items-center justify-center">
+                    <Icon name="ArrowRight" size={24} className="text-muted-foreground" />
+                  </div>
+                  <Card className="p-4 border-2 border-purple-500/30 bg-purple-500/5">
+                    <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center mb-3 mx-auto">
+                      <Icon name="List" size={20} className="text-purple-600" />
+                    </div>
+                    <div className="text-sm font-medium text-center">Меню</div>
+                  </Card>
+                </div>
               </div>
             </div>
-          )}
-        </aside>
-      </div>
+          </div>
 
-      <footer className="h-12 border-t border-border bg-white">
-        <Tabs defaultValue="triggers" className="h-full">
-          <div className="flex items-center h-full px-4">
-            <TabsList>
-              <TabsTrigger value="triggers">Триггеры</TabsTrigger>
-              <TabsTrigger value="variables">Переменные</TabsTrigger>
-              <TabsTrigger value="integrations">Интеграции</TabsTrigger>
-              <TabsTrigger value="logs">Логи</TabsTrigger>
-            </TabsList>
-
-            <div className="ml-auto flex items-center gap-3">
-              <Badge className="bg-green-100 text-green-700">
-                <Icon name="Send" size={12} className="mr-1" />
-                Telegram подключен
-              </Badge>
-              <Badge className="bg-gray-100 text-gray-700">
-                <Icon name="MessageCircle" size={12} className="mr-1" />
-                WhatsApp
-              </Badge>
+          <div className="absolute bottom-6 right-6 w-48 h-32 border border-border rounded-lg bg-card/80 backdrop-blur-sm shadow-lg p-2">
+            <div className="text-xs text-muted-foreground mb-2">Карта сценария</div>
+            <div className="w-full h-full bg-muted/30 rounded flex items-center justify-center">
+              <Icon name="Map" size={24} className="text-muted-foreground opacity-50" />
             </div>
           </div>
-        </Tabs>
-      </footer>
+        </main>
+
+        {rightPanelOpen && (
+          <aside className="w-80 border-l border-border bg-card flex flex-col shadow-sm">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <h3 className="font-semibold flex items-center gap-2">
+                <Icon name="Settings2" size={18} className="text-primary" />
+                Настройки узла
+              </h3>
+              <Button variant="ghost" size="icon" onClick={() => setRightPanelOpen(false)}>
+                <Icon name="X" size={18} />
+              </Button>
+            </div>
+            <ScrollArea className="flex-1">
+              <div className="p-4 space-y-6">
+                <div className="text-center py-12">
+                  <Icon name="MousePointerClick" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Выберите узел на холсте<br />для настройки его параметров
+                  </p>
+                </div>
+              </div>
+            </ScrollArea>
+
+            <div className="p-4 border-t border-border space-y-2">
+              <div className="text-xs font-semibold text-muted-foreground mb-3">Быстрые действия</div>
+              <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                <Icon name="Users" size={14} />
+                Управление пользователями
+              </Button>
+              <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                <Icon name="BarChart3" size={14} />
+                Статистика бота
+              </Button>
+              <Button variant="outline" size="sm" className="w-full justify-start gap-2">
+                <Icon name="History" size={14} />
+                История диалогов
+              </Button>
+            </div>
+          </aside>
+        )}
+      </div>
     </div>
   );
 };
