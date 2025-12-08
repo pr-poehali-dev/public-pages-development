@@ -51,61 +51,82 @@ export const MainContent = () => {
 
   return (
     <>
-      <section className="container mx-auto px-6 py-16">
-        <h2 className="text-4xl font-bold text-center mb-12">Для кого</h2>
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          <Card className="p-8 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer group">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-6">
-              <Icon name="TrendingUp" size={32} className="text-white" />
+      <section className="container mx-auto px-6 py-20">
+        <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">Для кого</h2>
+        <p className="text-center text-muted-foreground mb-16 text-lg">Выберите свой путь развития</p>
+        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <Card className="relative p-10 hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group border-2 hover:border-green-500/50 overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform" />
+            <div className="relative z-10">
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <Icon name="TrendingUp" size={36} className="text-white" />
+              </div>
+              <h3 className="text-3xl font-bold mb-4">Хочу запустить бизнес</h3>
+              <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+                Создавайте сайты, запускайте рекламу, продавайте товары — без программистов и дизайнеров
+              </p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                    <Icon name="Check" size={16} className="text-green-600 dark:text-green-400" />
+                  </div>
+                  <span>Визуальные конструкторы</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                    <Icon name="Check" size={16} className="text-green-600 dark:text-green-400" />
+                  </div>
+                  <span>AI-помощник для бизнеса</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                    <Icon name="Check" size={16} className="text-green-600 dark:text-green-400" />
+                  </div>
+                  <span>Автоматизация маркетинга</span>
+                </li>
+              </ul>
+              <Button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 shadow-lg py-6 text-lg" onClick={() => navigate('/register')}>
+                Начать бесплатно
+                <Icon name="ArrowRight" className="ml-2" size={20} />
+              </Button>
             </div>
-            <h3 className="text-2xl font-bold mb-3">Хочу запустить бизнес</h3>
-            <p className="text-muted-foreground mb-6">
-              Создавайте сайты, запускайте рекламу, продавайте товары — без программистов и дизайнеров
-            </p>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={20} className="text-green-600" />
-                <span>Визуальные конструкторы</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={20} className="text-green-600" />
-                <span>AI-помощник для бизнеса</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={20} className="text-green-600" />
-                <span>Автоматизация маркетинга</span>
-              </li>
-            </ul>
-            <Button className="w-full bg-green-600 hover:bg-green-700" onClick={() => navigate('/register')}>
-              Начать бесплатно
-            </Button>
           </Card>
 
-          <Card className="p-8 hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer group">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6">
-              <Icon name="Code" size={32} className="text-white" />
+          <Card className="relative p-10 hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group border-2 hover:border-purple-500/50 overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:scale-150 transition-transform" />
+            <div className="relative z-10">
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                <Icon name="Code" size={36} className="text-white" />
+              </div>
+              <h3 className="text-3xl font-bold mb-4">Создаю и продаю</h3>
+              <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
+                Находите заказы, продавайте шаблоны и скрипты, зарабатывайте на своих навыках
+              </p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                    <Icon name="Check" size={16} className="text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <span>Биржа фриланса с escrow</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                    <Icon name="Check" size={16} className="text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <span>Маркетплейс шаблонов</span>
+                </li>
+                <li className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                    <Icon name="Check" size={16} className="text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <span>Курсы для роста навыков</span>
+                </li>
+              </ul>
+              <Button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg py-6 text-lg" onClick={() => navigate('/register')}>
+                Начать бесплатно
+                <Icon name="ArrowRight" className="ml-2" size={20} />
+              </Button>
             </div>
-            <h3 className="text-2xl font-bold mb-3">Создаю и продаю</h3>
-            <p className="text-muted-foreground mb-6">
-              Находите заказы, продавайте шаблоны и скрипты, зарабатывайте на своих навыках
-            </p>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={20} className="text-purple-600" />
-                <span>Биржа фриланса с escrow</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={20} className="text-purple-600" />
-                <span>Маркетплейс шаблонов</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Icon name="Check" size={20} className="text-purple-600" />
-                <span>Курсы для роста навыков</span>
-              </li>
-            </ul>
-            <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={() => navigate('/register')}>
-              Начать бесплатно
-            </Button>
           </Card>
         </div>
       </section>

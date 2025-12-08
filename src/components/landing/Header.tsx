@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useNavigate } from 'react-router-dom';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -18,13 +19,13 @@ export const Header = () => {
   return (
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
+        isScrolled ? 'bg-background/95 backdrop-blur-md shadow-sm border-b border-border' : 'bg-transparent'
       }`}
     >
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         <button onClick={() => navigate('/')} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Icon name="Rocket" size={28} className="text-primary" />
-          <span className="text-2xl font-bold">BizForge</span>
+          <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">BizForge</span>
         </button>
         
         <nav className="hidden md:flex gap-8">
@@ -36,6 +37,7 @@ export const Header = () => {
         </nav>
         
         <div className="flex gap-3 items-center">
+          <ThemeToggle />
           <Button variant="ghost" onClick={() => navigate('/login')}>Войти</Button>
           <Button onClick={() => navigate('/register')}>Начать бесплатно</Button>
         </div>

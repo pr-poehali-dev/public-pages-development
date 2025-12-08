@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -54,18 +55,24 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </nav>
         </div>
 
-        <div className="absolute bottom-0 w-full p-6 border-t border-sidebar-border">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-              <Icon name="User" size={20} className="text-primary" />
+        <div className="absolute bottom-0 w-full border-t border-sidebar-border">
+          <div className="p-4 flex items-center justify-between">
+            <span className="text-sm text-sidebar-foreground/60">Тема</span>
+            <ThemeToggle />
+          </div>
+          <div className="p-6 pt-4 border-t border-sidebar-border">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                <Icon name="User" size={20} className="text-primary" />
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-sidebar-foreground">Иван Петров</div>
+                <div className="text-xs text-sidebar-foreground/60">Pro Plan</div>
+              </div>
+              <Button variant="ghost" size="icon" className="text-sidebar-foreground" onClick={() => navigate('/login')}>
+                <Icon name="LogOut" size={18} />
+              </Button>
             </div>
-            <div className="flex-1">
-              <div className="text-sm font-medium text-sidebar-foreground">Иван Петров</div>
-              <div className="text-xs text-sidebar-foreground/60">Pro Plan</div>
-            </div>
-            <Button variant="ghost" size="icon" className="text-sidebar-foreground" onClick={() => navigate('/login')}>
-              <Icon name="LogOut" size={18} />
-            </Button>
           </div>
         </div>
       </aside>
